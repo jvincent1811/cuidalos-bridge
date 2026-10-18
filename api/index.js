@@ -4,8 +4,6 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    console.log("1. EMQX ENVIO:", req.body); // <-- NUEVO LOG
-
     let rawCode = req.body.codigo || req.body.device_id || req.body.devId;
     if (!rawCode) return res.status(400).json({ error: 'No se recibió código' });
 
@@ -16,11 +14,14 @@ export default async function handler(req, res) {
       timestamp: new Date().toISOString()
     });
 
-    console.log("2. PAYLOAD A BILT:", payload); // <-- NUEVO LOG
-
     const secret = process.env.ESCUELA_WEBHOOK_SECRET;
-    const signature = crypto.createHmac('sha256', secret).update(payload).digest('hex');
     const unixTimestamp = Date.now().toString();
+
+    // CORRECCIÓN: Firmamos el timestamp, un punto y el payload
+    const signature = crypto
+      .createHmac('sha256', secret)
+      .update(`${unixTimestamp}.${payload}`, 'utf8')
+      .digest('hex');
 
     const biltUrl = process.env.BILT_WEBHOOK_URL;
     const response = await fetch(biltUrl, {
@@ -34,7 +35,7 @@ export default async function handler(req, res) {
     });
 
     const text = await response.text();
-    console.log("3. RESPUESTA DE BILT:", text); // <-- NUEVO LOG
+    console.log("3. RESPUESTA DE BILT:", text);
 
     return res.status(200).json({ success: response.ok, bilt_status: response.status, bilt_response: text });
 
