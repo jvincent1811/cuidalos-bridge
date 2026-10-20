@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   try {
     const data = req.body;
     
-    const response = await fetch("https://api.github.com/repos/jvincet1811/cuidalos-radar/dispatches", {
+    const response = await fetch("https://api.github.com/repos/jvincent1811/cuidalos-radar/dispatches", {
       method: 'POST',
       headers: {
         'Accept': 'application/vnd.github.v3+json',
