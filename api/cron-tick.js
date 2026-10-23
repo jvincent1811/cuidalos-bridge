@@ -1,8 +1,11 @@
 export default async function handler(req, res) {
-  // Esta URL es el backend de Bilt que nos dio
+  // 1. Verificamos la llave secreta que vendrá en la URL
+  const { secret } = req.query;
+  if (secret !== process.env.CRON_SECRET) {
+    return res.status(401).json({ error: 'No autorizado' });
+  }
+
   const BILT_URL = "https://898d66a5-fd1e-4a85-94b8-f200c01feb08.cloud.bilt.me/functions/v1/escuela-cascada";
-  
-  // Usamos el token que Bilt nos indicó
   const TOKEN = process.env.BAILEYS_API_TOKEN;
 
   try {
@@ -12,7 +15,6 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${TOKEN}`
       },
-      // El "tick" le dice a Bilt que revise si algo ya venció
       body: JSON.stringify({ action: "tick" })
     });
 
