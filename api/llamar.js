@@ -7,12 +7,11 @@ export default async function handler(req, res) {
   const fromNumber = process.env.TWILIO_FROM_NUMBER;
   
   const host = req.headers.host;
-  
-  // Pasamos ambos nombres en la URL de forma segura
   const ninoSeguro = encodeURIComponent(nombre_nino || 'su hijo');
   const papaSeguro = encodeURIComponent(nombre_papa || 'padre de familia');
   
   const answerUrl = `https://${host}/api/answer.xml?nino=${ninoSeguro}&papa=${papaSeguro}`;
+  const statusCallbackUrl = `https://${host}/api/status-llamada`;
 
   const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Calls.json`;
   const credentials = Buffer.from(`${accountSid}:${authToken}`).toString('base64');
@@ -21,6 +20,9 @@ export default async function handler(req, res) {
   params.append('To', telefono_destino);
   params.append('From', fromNumber);
   params.append('Url', answerUrl);
+  // Aquí le decimos a Twilio que nos avise cuando la llamada termine
+  params.append('StatusCallback', statusCallbackUrl);
+  params.append('StatusCallbackEvent', 'completed');
 
   try {
     const response = await fetch(twilioUrl, {
