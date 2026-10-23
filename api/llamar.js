@@ -1,13 +1,15 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { telefono_destino } = req.body;
+  const { telefono_destino, nombre_niño } = req.body;
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const fromNumber = process.env.TWILIO_FROM_NUMBER;
   
   const host = req.headers.host;
-  const answerUrl = `https://${host}/api/answer.xml`;
+  // Pasamos el nombre del niño en la URL de forma segura
+  const nombreSeguro = encodeURIComponent(nombre_niño || 'tu hijo');
+  const answerUrl = `https://${host}/api/answer.xml?nombre=${nombreSeguro}`;
 
   const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Calls.json`;
   const credentials = Buffer.from(`${accountSid}:${authToken}`).toString('base64');
