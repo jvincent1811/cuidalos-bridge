@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "worker:school": "tsx scripts/escuela-worker.ts"
+    "worker:school": "tsx scripts/escuela-worker.ts",
+    "worker:abuelitos": "npx tsx scripts/abuelitos-worker.ts"
   },
   "dependencies": {
     "tsx": "~4.21.0"
