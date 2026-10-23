@@ -1,5 +1,8 @@
 {
   "name": "cuidalos-bridge",
   "version": "1.0.0",
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "worker:school": "npx tsx scripts/escuela-worker.ts"
+  }
 }
